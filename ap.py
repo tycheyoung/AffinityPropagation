@@ -24,17 +24,15 @@ for i in range(0,N,1):
     S[i][i] = median(S)
 
 for m in range(0,iter,1):
-    # update responsibility
-    for i in range(0,N,1):
-        for k in range(0,N,1):
-            maxi = mpf("-1e100")
-            for kk in range(0,k,1):
-                if(S[i][kk]+A[i][kk]>maxi):
-                    maxi = S[i][kk]+A[i][kk]
-            for kk in range(k+1,N,1):
-                if(S[i][kk]+A[i][kk]>maxi): 
-                    maxi = S[i][kk]+A[i][kk]
-            R[i][k] = (1-lbda)*(S[i][k] - maxi) + lbda*R[i][k]
+   # update responsibility
+    responsib_tmp = similarity + avail
+    for i in range(0, node_num, 1):
+        temp = np.copy(responsib_tmp[i, :])
+        temp_max_position = temp.argmax()
+        responsib_new[i, :] = temp.max()
+        responsib_new[i, temp_max_position] = np.partition(temp, -2)[-2]
+    responsib = lbda * (similarity - responsib_new) + (1 - lbda) * responsib
+    
     # update availability
     for i in range(0,N,1):
         for k in range(0,N,1):
